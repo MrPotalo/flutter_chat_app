@@ -62,7 +62,7 @@ class InitializePage extends StatelessWidget {
       onSubmitted: (value) async {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setString('user', value);
-        Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => new MyHomePage(value)));
+        Navigator.pushReplacement(context, new MaterialPageRoute(builder: (BuildContext context) => new MyHomePage(value)));
       },
     )));
   }
@@ -79,8 +79,7 @@ class InitChecker extends StatefulWidget{
 class InitCheckerState extends State<InitChecker> {
   void _getPreferences() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    _userName = prefs.getString('user');
-    setState((){});
+    setState(() { _userName = prefs.getString('user'); });
   }
   @override
   void initState(){
