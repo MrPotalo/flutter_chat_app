@@ -56,19 +56,29 @@ class InitializePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
+      appBar: new AppBar(title: new Text("Set your Name")),
         body: new Center(
+            child:
+      new Row(children: [
+        new Text("Name: "),
+        new Expanded(
             child: new TextField(
-      controller: _controller,
-      onSubmitted: (value) async {
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.setString('user', value);
-        Navigator.pushReplacement(context, new MaterialPageRoute(builder: (BuildContext context) => new MyHomePage(value)));
-      },
-    )));
+          controller: _controller,
+          onSubmitted: (value) async {
+            SharedPreferences prefs = await SharedPreferences.getInstance();
+            prefs.setString('user', value);
+            Navigator.pushReplacement(
+                context,
+                new MaterialPageRoute(
+                    builder: (BuildContext context) => new MyHomePage(value)));
+          },
+        ))
+      ])
+    ));
   }
 }
 
-class InitChecker extends StatefulWidget{
+class InitChecker extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
@@ -79,10 +89,13 @@ class InitChecker extends StatefulWidget{
 class InitCheckerState extends State<InitChecker> {
   void _getPreferences() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() { _userName = prefs.getString('user'); });
+    setState(() {
+      _userName = prefs.getString('user');
+    });
   }
+
   @override
-  void initState(){
+  void initState() {
     _getPreferences();
   }
 
@@ -122,6 +135,7 @@ class MyHomePageState extends State<MyHomePage> {
       'message': _messageController.text,
       'date': new DateTime.now().millisecondsSinceEpoch
     });
+    _messageController.text = "";
   }
 
   @override
@@ -131,17 +145,30 @@ class MyHomePageState extends State<MyHomePage> {
         title: const Text('Firestore Example'),
       ),
       body: new Column(children: [
-        new TextField(
-          decoration: new InputDecoration(helperText: "Message"),
-          controller: _messageController,
-        ),
         new Expanded(child: new MessageList()),
+        new Container(
+            padding: new EdgeInsets.symmetric(vertical: 5.0, horizontal: 5.0),
+            child: new Row(children: [
+              new Expanded(
+                  child: new Container(
+                      padding: new EdgeInsets.symmetric(horizontal: 5.0),
+                      decoration: new BoxDecoration(
+                          border: new Border.all(color: Colors.black),
+                          borderRadius:
+                              new BorderRadius.all(new Radius.circular(10.0))),
+                      child: new TextField(
+                        decoration: new InputDecoration(hintText: "Message"),
+                          controller: _messageController,
+                          onSubmitted: (val) {
+                            _addMessage();
+                          },
+                        )
+                      )),
+              new IconButton(
+                  icon: new Icon(Icons.send, color: Colors.blue),
+                  onPressed: _addMessage)
+            ])),
       ]),
-      floatingActionButton: new FloatingActionButton(
-        onPressed: _addMessage,
-        tooltip: 'Increment',
-        child: new Icon(Icons.add),
-      ),
     );
   }
 }
