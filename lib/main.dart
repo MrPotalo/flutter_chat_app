@@ -7,6 +7,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 void main() => runApp(new MyApp());
 
 class MessageList extends StatelessWidget {
+  MessageList({this.userName});
+  final userName;
   @override
   Widget build(BuildContext context) {
     return new StreamBuilder<QuerySnapshot>(
@@ -17,15 +19,31 @@ class MessageList extends StatelessWidget {
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (!snapshot.hasData) return const Text('Loading...');
         return new ListView(
-          children: snapshot.data.documents.map((DocumentSnapshot document) {
-            return new ListTile(
-              title: new Text(document['user']),
-              subtitle: new Text(document['message']),
-            );
+          reverse: true,
+            children: snapshot.data.documents.map((DocumentSnapshot document) {
+            return _buildListTile(document['user'], document['message']);
           }).toList(),
         );
       },
     );
+  }
+  Widget _buildListTile(user, msg){
+    bool isMine = user == userName;
+    return new Container(
+      padding: new EdgeInsets.symmetric(horizontal: 2.0, vertical: 5.0),
+        child: new Container(
+          padding: new EdgeInsets.symmetric(vertical: 4.0, horizontal: 4.0),
+          decoration: new BoxDecoration(border: new Border.all(color: Colors.black), borderRadius: new BorderRadius.all(new Radius.circular(5.0))),
+          child: new Row(
+            children: [
+              new Text(user + ": ", style: new TextStyle(fontWeight: FontWeight.bold, color: (isMine ? Colors.blue : Colors.black))),
+              new Expanded(
+                child: new Text(msg)
+              )
+            ]
+          )
+        )
+      );
   }
 }
 
@@ -34,7 +52,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Messaging',
       theme: new ThemeData(
         // This is the theme of your application.
         //
@@ -142,10 +160,10 @@ class MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: const Text('Firestore Example'),
+        title: const Text('Messaging'),
       ),
       body: new Column(children: [
-        new Expanded(child: new MessageList()),
+        new Expanded(child: new MessageList(userName: userName)),
         new Container(
             padding: new EdgeInsets.symmetric(vertical: 5.0, horizontal: 5.0),
             child: new Row(children: [
